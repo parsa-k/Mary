@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
 import { SparkleBackground } from './components/SparkleBackground';
 import { RunawayButton } from './components/InteractiveButton';
-import { generateLovePoem } from './services/geminiService';
 import { AppState } from './types';
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Stars, Gift, Gem } from 'lucide-react';
+import { Stars, Gift, Gem } from 'lucide-react';
+
+// Static poem definition - no API required
+const VALENTINE_POEM = `A shimmer of magic, a soft glow of light,
+You dazzle like diamonds, dear Mary Beth, bright.
+With glitter and grace and a touch of the divine,
+You’re the elegant spark in this heart of mine.`;
 
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>(AppState.INVITATION);
-  const [poem, setPoem] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
   const [yesScale, setYesScale] = useState(1);
 
   const handleNoInteraction = () => {
     setYesScale((prev) => Math.min(prev + 0.15, 3)); // Grow gradually up to 3x size
   };
 
-  const handleAccept = async () => {
+  const handleAccept = () => {
     // Trigger Gold and Red confetti
     const duration = 3000;
     const end = Date.now() + duration;
@@ -45,16 +48,6 @@ const App: React.FC = () => {
     frame();
 
     setState(AppState.ACCEPTED);
-    setIsLoading(true);
-
-    try {
-      const generatedPoem = await generateLovePoem("Mary Beth");
-      setPoem(generatedPoem);
-    } catch (e) {
-      setPoem("Roses are red, violets are blue, I'm so lucky to have a diamond like you!");
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
@@ -201,20 +194,13 @@ const App: React.FC = () => {
                        A Poem for You
                      </h3>
                    
-                     {isLoading ? (
-                       <div className="flex flex-col items-center justify-center py-6 space-y-4">
-                         <div className="w-12 h-12 border-4 border-rose-900/50 border-t-amber-400 rounded-full animate-spin"></div>
-                         <p className="text-sm text-amber-200/80 animate-pulse font-serif-display italic">Consulting Cupid...</p>
-                       </div>
-                     ) : (
-                       <motion.p 
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="font-handwriting text-xl sm:text-2xl md:text-4xl text-white leading-relaxed whitespace-pre-line drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] px-4"
-                       >
-                         {poem}
-                       </motion.p>
-                     )}
+                     <motion.p 
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="font-handwriting text-xl sm:text-2xl md:text-4xl text-white leading-relaxed whitespace-pre-line drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] px-4"
+                     >
+                       {VALENTINE_POEM}
+                     </motion.p>
                    </motion.div>
                 </div>
               </div>
